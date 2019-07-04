@@ -2,6 +2,7 @@ package Coupons.Logic;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.List;
 
@@ -23,20 +24,19 @@ public class PurchasesController {
 	
 	
 	@Autowired
-	private Coupons.DB.CouponsDAO couponsDAO;
+	private Coupons.DB.ICouponsDAO couponsDAO;
 
 	@Autowired
 	private Coupons.DB.IPurchasesDAO purchasesDAO;
 
 	@Autowired
-	private Coupons.DB.CustomerDAO customerDAO;
+	private Coupons.DB.ICustomersDAO customerDAO;
 	
 	@Autowired
-	private Coupons.DB.CompaniesDAO companiesDAO;
+	private Coupons.DB.ICompaniesDAO companiesDAO;
 
 
-	public PurchasesController() {
-	}
+	
 
 
 	/**
@@ -54,43 +54,52 @@ public class PurchasesController {
 public void purchaseCoupon(Purchase purchase, UserData userData) {
 	try
 	{
-		if (purchase == null) {
+		if (purchase == null || purchase.getCoupon() == null) {
 			throw new ApplicationException(ErrorType.EMPTY, ErrorType.EMPTY.getInternalMessage(), false);
 		}
-		if (purchase.getCustomerID()<1) {
+		if (purchase.getCustomer().getCustomerId()<1) {
 			throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
 		}
-		if (!customerDAO.isCustomerIDExist(purchase.getCustomerID())) {
+		if (!customerDAO.existsById(purchase.getCustomer().getCustomerId())) {
 			throw new ApplicationException(ErrorType.CUSTOMER_ID_DOES_NOT_EXIST, ErrorType.CUSTOMER_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 		}
 		if (!userData.getType().name().equals("Customer")) {
 			throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
 		}
-		if (purchase.getCustomerID() != userData.getUserID()) {
+		if (purchase.getCustomer().getCustomerId() != userData.getUserID()) {
 			throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
 		}
 		if (purchase.getAmount()<1) {
 			throw new ApplicationException(ErrorType.INVALID_AMOUNT, ErrorType.INVALID_AMOUNT.getInternalMessage(), false);
 		}
-		Coupon couponDB = couponsDAO.getOneCoupon(purchase.getCouponID());
+		Coupon couponDB = couponsDAO.findById(purchase.getCoupon().getCouponId()).get();
+	
 		if (couponDB.getAmount()<purchase.getAmount()) {
 			throw new ApplicationException(ErrorType.NOT_ENOUGH_COUPONS_IN_STOCK, ErrorType.NOT_ENOUGH_COUPONS_IN_STOCK.getInternalMessage()+couponDB.getAmount(), false);
 		}
 		DateUtils.validateDates(couponDB.getstartDate(), couponDB.getendDate());
-		if (couponDB.getcompanyId()<1) {
+		if (couponDB.getCompany().getCompanyID()<1) {
 			throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
 		}
-		if (!companiesDAO.isCompanyExists(couponDB.getcompanyId())) {
+		if (!companiesDAO.existsById(couponDB.getCompany().getCompanyID())) {
 			throw new ApplicationException(ErrorType.COMPANY_ID_DOES_NOT_EXIST, ErrorType.COMPANY_ID_DOES_NOT_EXIST.getInternalMessage(),false);
 		}
-		if (!couponsDAO.isCouponExists(couponDB.getId())) {
+		if (!couponsDAO.existsById(couponDB.getCouponId())) {
 			throw new ApplicationException(ErrorType.COUPON_ID_DOES_NOT_EXIST, ErrorType.COUPON_ID_DOES_NOT_EXIST.getInternalMessage(),false);
 		}
 		if (couponDB.getPrice() <0)
 			throw new ApplicationException(ErrorType.INVALID_PRICE, ErrorType.INVALID_PRICE.getInternalMessage(), false);
 		
-		NameUtils.isValidName(couponDB.getTitle());		purchasesDAO.addCouponPurchase(purchase);
-		couponsDAO.changeCouponAmount(purchase.getCouponID(), purchase.getAmount());
+		NameUtils.isValidName(couponDB.getTitle());		
+		couponDB.setAmount(couponDB.getAmount()-purchase.getAmount());
+
+		// update coupon
+		couponsDAO.save(couponDB);
+
+		
+		purchase.setDate(new Date());
+
+		purchasesDAO.save(purchase);
 
 	}
 	catch(Exception Ex){
@@ -113,11 +122,11 @@ public void deleteCustomerPurchases(long customerId, UserData userData) throws A
 		if (userData.getType().name().equals("Company")) {
 			throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
 		}
-		if (!customerDAO.isCustomerIDExist(customerId)) {
+		if (!customerDAO.existsById(customerId)) {
 			throw new ApplicationException(ErrorType.CUSTOMER_ID_DOES_NOT_EXIST, ErrorType.CUSTOMER_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 
 		}
-		purchasesDAO.deleteCustomerPurchases(customerId);
+		purchasesDAO.deleteById(customerId);
 
 	
 	
@@ -130,18 +139,18 @@ public void deleteCompanyPurchases(long companyId, UserData userData) throws App
 		}
 		
 		if (userData.getType().name().equals("Company")) {
-			if (companyId != userData.getCompany()) {
+			if (companyId != userData.getCompanyID()) {
 				throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
 			}		
 		}
 		if (userData.getType().name().equals("Customer")) {
 			throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
 		}
-		if (!companiesDAO.isCompanyExists(companyId)) {
+		if (!companiesDAO.existsById(companyId)) {
 			throw new ApplicationException(ErrorType.COMPANY_ID_DOES_NOT_EXIST, ErrorType.COMPANY_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 
 		}
-		purchasesDAO.deleteCompanyPurchases(companyId);
+		purchasesDAO.deleteById(companyId);
 
 	
 }
@@ -151,16 +160,17 @@ public void deletePurchase(long purchaseID, UserData userData) throws Applicatio
 	if (purchaseID<1) {
 		throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
 	}
-	if (!purchasesDAO.isCouponPurchaseExists(purchaseID)) {
+	if (!purchasesDAO.existsById(purchaseID)) {
 		throw new ApplicationException(ErrorType.PURCHASE_ID_DOES_NOT_EXIST,ErrorType.PURCHASE_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 	}
 	if (!userData.getType().name().equals("Customer")) {
+		if (!purchasesDAO.existsByIdAndCustomerId(purchaseID, userData.getUserID())) {
+			throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH,ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
+		}
 		throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
 	}
-	if (!purchasesDAO.isPurchaseByCustomer(purchaseID, userData.getUserID())) {
-		throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH,ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
-	}
-	purchasesDAO.deletePurchase(purchaseID);
+	
+	purchasesDAO.deleteById(purchaseID);
 
 }
 /*public void deleteCouponPurchases(long couponId, UserData userData)  throws ApplicationException{
@@ -206,11 +216,11 @@ public void deletePurchase(long purchaseID, UserData userData) throws Applicatio
 			if (userData.getType().name().equals("Company")) {
 				throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
 			}
-			if (!customerDAO.isCustomerIDExist(customerID)) {
+			if (!customerDAO.existsById(customerID)) {
 				throw new ApplicationException(ErrorType.CUSTOMER_ID_DOES_NOT_EXIST, ErrorType.CUSTOMER_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 
 			}
-			return couponsDAO.getCustomerCoupons(customerID);
+			return couponsDAO.findByPurchasesCustomerId(customerID);
 			
 
 	}
@@ -230,11 +240,11 @@ public List<Purchase> getCustomerPurchases(long customerId, UserData userData) t
 	if (userData.getType().name().equals("Company")) {
 		throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
 	}
-	if (!customerDAO.isCustomerIDExist(customerId)) {
+	if (!customerDAO.existsById(customerId)) {
 		throw new ApplicationException(ErrorType.CUSTOMER_ID_DOES_NOT_EXIST, ErrorType.CUSTOMER_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 
 	}
-	return purchasesDAO.getAllPurchasesbyCustomer(customerId);
+	return purchasesDAO.findByCustomerId(customerId);
 }
 
 
@@ -246,15 +256,21 @@ public List<Purchase> getAllPurchases(UserData userData) throws ApplicationExcep
 		
 	}
 	// TODO Auto-generated method stub
-	return purchasesDAO.getAllPurchases();
+	List<Purchase> purchases = new ArrayList<Purchase>();
+
+	purchasesDAO.findAll().forEach(purchases::add);
+
+	return purchases;
+
 }
 
 
 public int getCustomerPurchaseAmount(long customerId, UserData userData) throws ApplicationException {
 
-	if (userData.getType().name().equals("Company"))
+	if (userData.getType().name().equals("Company")) {
 		throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
-
+	}
+	
 	if (userData.getType().name().equals("Customer")) {
 		if (customerId != userData.getUserID())
 			throw new ApplicationException(ErrorType.USER_ID_MISMATCH, ErrorType.USER_ID_MISMATCH.getInternalMessage(), true);
@@ -265,10 +281,20 @@ public int getCustomerPurchaseAmount(long customerId, UserData userData) throws 
 		throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
 	}
 	
-	if (!customerDAO.isCustomerIDExist(customerId))
+	if (!customerDAO.existsById(customerId)) {
 		throw new ApplicationException(ErrorType.CUSTOMER_ID_DOES_NOT_EXIST, ErrorType.CUSTOMER_ID_DOES_NOT_EXIST.getInternalMessage(), false);
+	}
+	
 
-	return purchasesDAO.getCustomerPurchaseAmount(customerId);
+	List<Purchase> purchases = purchasesDAO.findByCustomerId(customerId);
+
+	int amount = 0;
+
+	for (int i = 0; i < purchases.size(); i++) {
+		amount += purchases.get(i).getAmount();
+	}
+
+	return amount;
 
 }
 

@@ -1,15 +1,19 @@
 package Coupons.DB;
 
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+
+import Coupons.JavaBeans.Customer;
 import Coupons.JavaBeans.User;
 
 
 //import com.avi.coupons.utils.JdbcUtils;
 @Repository
-public interface IUsersDAO {
+public interface IUsersDAO extends CrudRepository<User, Long>{
 	
 
 	public boolean existsByUserName(String userName);
+	public boolean existsByEmail(String email);
 
 	/**
 	 * @param userName Receive an user name

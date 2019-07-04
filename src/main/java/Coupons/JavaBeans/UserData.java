@@ -35,7 +35,7 @@ public class UserData {
 		this.type = type;
 	}
 
-	public Long getCompany() {
+	public Long getCompanyID() {
 		return companyID;
 	}
 

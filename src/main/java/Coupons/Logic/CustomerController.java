@@ -1,6 +1,7 @@
 package Coupons.Logic;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ import Coupons.Utils.NameUtils;
 public class CustomerController{
 	
 	@Autowired
-	private Coupons.DB.CustomerDAO customerDAO;
+	private Coupons.DB.ICustomersDAO customerDAO;
 
 	@Autowired
 	private Coupons.DB.IUsersDAO usersDAO;
@@ -50,10 +51,10 @@ public class CustomerController{
 				throw new ApplicationException(ErrorType.USER_ID_MISMATCH, ErrorType.USER_ID_MISMATCH.getInternalMessage(), true);
 			}
 		}
-		if (!customerDAO.isCustomerIDExist(customerID))
+		if (!customerDAO.existsById(customerID))
 			throw new ApplicationException(ErrorType.CUSTOMER_ID_DOES_NOT_EXIST,ErrorType.CUSTOMER_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 
-		return  customerDAO.getOneCustomer(customerID);	
+		return  customerDAO.findById(customerID).get();	
 		
 	}
 	
@@ -68,14 +69,12 @@ public class CustomerController{
 					throw new ApplicationException(ErrorType.USER_ID_MISMATCH, ErrorType.USER_ID_MISMATCH.getInternalMessage(), true);
 				}
 			}
-			if (!customerDAO.isCustomerIDExist(customerId))
+			if (!customerDAO.existsById(customerId))
 				throw new ApplicationException(ErrorType.CUSTOMER_ID_DOES_NOT_EXIST,ErrorType.CUSTOMER_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 
-			if (!usersDAO.isUserIDExist(customerId))
+			if (!usersDAO.existsById(customerId))
 				throw new ApplicationException(ErrorType.USER_ID_DOES_NOT_EXIST, ErrorType.USER_ID_DOES_NOT_EXIST.getInternalMessage(),false);
-					purchasesDAO.deleteCustomerPurchases(customerId);
-			customerDAO.deleteCustomer(customerId);
-			usersDAO.deleteUserByID(customerId);
+			customerDAO.deleteById(customerId);
 		}
 		catch(Exception Ex){
 			 System.out.println(Ex.getMessage());
@@ -95,10 +94,10 @@ public class CustomerController{
 			NameUtils.isValidName(customer.getFirstName());
 			NameUtils.isValidName(customer.getLastName());
 			User customerUser= customer.getUser();
- 			long userID = usersDAO.createUser(customerUser);
+ 			long userID = usersDAO.save(customerUser).getId();
 			customer.setCustomerId(userID);
 			customer.getUser().setId(userID);
-			customerDAO.addCustomer(customer);
+			customerDAO.save(customer);
 			}
 		
 		catch(Exception Ex){
@@ -143,22 +142,22 @@ public class CustomerController{
 			}
 			NameUtils.isValidName(innerUser.getUserName());
 
-			if (!customerDAO.isCustomerIDExist(customer.getCustomerId())) {
+			if (!customerDAO.existsById(customer.getCustomerId())) {
 				throw new ApplicationException(ErrorType.CUSTOMER_ID_DOES_NOT_EXIST,ErrorType.CUSTOMER_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 			}
 			
-			User userFromDataBase = usersDAO.getUserByID(customer.getCustomerId());
+			User userFromDataBase = usersDAO.findById(customer.getCustomerId()).get();
 
 			if (!userFromDataBase.getUserName().equals(customer.getUser().getUserName())) {
 
-				if (usersDAO.isUserNameExist(customer.getUser().getUserName()))
+				if (usersDAO.existsByUserName(customer.getUser().getUserName()))
 
 					throw new ApplicationException(ErrorType.NAME_IS_ALREADY_EXISTS,ErrorType.NAME_IS_ALREADY_EXISTS.getInternalMessage(), false);
 
 			}
 
-			usersDAO.updateUser(innerUser);
-			customerDAO.updateCustomer(customer);
+			usersDAO.save(innerUser);
+			customerDAO.save(customer);
 			}
 		
 		catch(Exception Ex){
@@ -176,12 +175,13 @@ public class CustomerController{
 				throw new ApplicationException(ErrorType.USER_ID_MISMATCH, ErrorType.USER_ID_MISMATCH.getInternalMessage(), true);
 			}
 		}
-		if (!customerDAO.isCustomerIDExist(customerId))
+		if (!customerDAO.existsById(customerId))
 			throw new ApplicationException(ErrorType.CUSTOMER_ID_DOES_NOT_EXIST,ErrorType.CUSTOMER_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 
-		if (!usersDAO.isUserIDExist(userData.getUserID()))
+		if (!usersDAO.existsById(userData.getUserID()))
 			throw new ApplicationException(ErrorType.USER_ID_DOES_NOT_EXIST, ErrorType.USER_ID_DOES_NOT_EXIST.getInternalMessage(),false);
-		String name = customerDAO.getCustomerName(customerId);
+		Customer customer = customerDAO.findById(customerId).get();
+		String name = customer.getFirstName()+" "+customer.getLastName();
 
 		return name;
 
@@ -200,7 +200,11 @@ public class CustomerController{
 		}
 		
 		
-		return customerDAO.getAllCustomers();
+		List<Customer> customers = new ArrayList<Customer>();
+
+		customerDAO.findAll().forEach(customers::add);
+
+		return customers;
 	}
 	
 }

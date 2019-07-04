@@ -20,9 +20,9 @@ public class CouponExpirationDailyJob implements Runnable {
 	
 	private boolean quit = false;
 	@Autowired
-	private  Coupons.DB.CouponsDAO couponsDAO = new Coupons.DB.CouponsDAO();
+	private  Coupons.DB.ICouponsDAO couponsDAO;
 	@Autowired
-	private  Coupons.DB.IPurchasesDAO purchasesDAO = new Coupons.DB.IPurchasesDAO();
+	private  Coupons.DB.IPurchasesDAO purchasesDAO;
 	
 	private LocalDate date = LocalDate.now();
 	
@@ -39,8 +39,7 @@ public class CouponExpirationDailyJob implements Runnable {
 				//update current date
 				date = LocalDate.now();
 				//get expired coupons
-				purchasesDAO.deleteExpiredPurchases();
-				couponsDAO.deleteExpiredCoupons();
+				couponsDAO.deleteExpiredCoupon();
 			}
 			//wait 1 hour and check for date change
 			try {

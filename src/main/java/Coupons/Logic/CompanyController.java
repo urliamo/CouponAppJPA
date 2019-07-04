@@ -1,5 +1,6 @@
 package Coupons.Logic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ import Coupons.Utils.NameUtils;
 public class CompanyController {
 
 	@Autowired
-	private Coupons.DB.CompaniesDAO companiesDAO;
+	private Coupons.DB.ICompaniesDAO companiesDAO;
 	@Autowired
 	private Coupons.DB.IPurchasesDAO purchasesDAO;
 	
@@ -32,7 +33,7 @@ public class CompanyController {
 	private Coupons.DB.IUsersDAO usersDAO;
 	
 	@Autowired
-	private Coupons.DB.CouponsDAO couponsDAO;
+	private Coupons.DB.ICouponsDAO couponsDAO;
 
 	/**
 	 *adds a new company to the DB using the DAO.
@@ -60,13 +61,13 @@ public class CompanyController {
 			throw new ApplicationException(ErrorType.COMPANY_ID_MUST_BE_ASSIGNED, ErrorType.COMPANY_ID_MUST_BE_ASSIGNED.getInternalMessage(), true);
 		}
 		
-		if (companiesDAO.isCompanyMailExist(company.getEmail())) {
+		if (companiesDAO.existsByEmail(company.getEmail())) {
 			throw new ApplicationException(ErrorType.EXISTING_EMAIL, ErrorType.EXISTING_EMAIL.getInternalMessage(), false);
 		}
-		if (companiesDAO.isCompanyNameExist(company.getName())) {
+		if (companiesDAO.existsByName(company.getName())) {
 			throw new ApplicationException(ErrorType.NAME_IS_ALREADY_EXISTS, ErrorType.NAME_IS_ALREADY_EXISTS.getInternalMessage(), false);
 		}
-			return companiesDAO.addCompany(company);
+			return companiesDAO.save(company).getCompanyID();
 		
 	}
 	
@@ -85,7 +86,7 @@ public class CompanyController {
 			throw new ApplicationException(ErrorType.EMPTY, ErrorType.EMPTY.getInternalMessage(), false);
 		}
 		if (!userData.getType().name().equals("Administrator")) {
-			if (userData.getCompany()!=company.getCompanyID()) {
+			if (userData.getCompanyID()!=company.getCompanyID()) {
 			throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
 		}
 		}
@@ -95,21 +96,21 @@ public class CompanyController {
 			throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
 			
 		}
-		if (companiesDAO.isCompanyMailExist(company.getEmail())) {
+		if (companiesDAO.existsByEmail(company.getEmail())) {
 			throw new ApplicationException(ErrorType.EXISTING_EMAIL, ErrorType.EXISTING_EMAIL.getInternalMessage(), false);
 		}
-		if (companiesDAO.isCompanyNameExist(company.getName())) {
+		if (companiesDAO.existsByName(company.getName())) {
 			throw new ApplicationException(ErrorType.NAME_IS_ALREADY_EXISTS, ErrorType.NAME_IS_ALREADY_EXISTS.getInternalMessage(), false);
 		}
-		if (!companiesDAO.isCompanyExists(company.getCompanyID())) {
+		if (!companiesDAO.existsById(company.getCompanyID())) {
 			throw new ApplicationException(ErrorType.COMPANY_ID_DOES_NOT_EXIST, ErrorType.COMPANY_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 		}
 				
-		if (companiesDAO.getCompanyByID(company.getCompanyID()).getName()!= company.getName()) {
+		if (companiesDAO.findById(company.getCompanyID()).get().getName()!= company.getName()) {
 			throw new ApplicationException(ErrorType.NAME_IS_IRREPLACEABLE, ErrorType.NAME_IS_IRREPLACEABLE.getInternalMessage(), false);
 		}
 		else {
-			companiesDAO.updateCompany(company);
+			companiesDAO.save(company);
 		}
 			
 	
@@ -129,7 +130,7 @@ public class CompanyController {
 			try {
 				
 				if (!userData.getType().name().equals("Administrator")) {
-					if (userData.getCompany()!=companyId) {
+					if (userData.getCompanyID()!=companyId) {
 					throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
 					}
 				}
@@ -138,18 +139,13 @@ public class CompanyController {
 					throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
 					
 				}
-				if (!companiesDAO.isCompanyExists(companyId)) {
+				if (!companiesDAO.existsById(companyId)) {
 					throw new ApplicationException(ErrorType.COMPANY_ID_DOES_NOT_EXIST, ErrorType.COMPANY_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 				}
 				
-				//remove company coupon purchases 
-				purchasesDAO.deleteCompanyPurchases(companyId);
-				//remove company coupons 
-				couponsDAO.deleteCompanyCoupons(companyId);
-				//remove company users
-				usersDAO.deleteCompanysUsers(companyId);
+		
 				//remove company from DB
-				companiesDAO.deleteCompany(companyId);
+				companiesDAO.deleteById(companyId);
 				
 				
 			}
@@ -171,7 +167,11 @@ public class CompanyController {
 				throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
 
 			}
-			return companiesDAO.getAllCompanies();
+			List<Company> companies = new ArrayList<Company>();
+
+			companiesDAO.findAll().forEach(companies::add);
+
+			return companies;
 		}
 		
 		/**
@@ -184,7 +184,7 @@ public class CompanyController {
 		 */
 		public Company getCompany(long id, UserData userData) throws ApplicationException{
 			if (!userData.getType().name().equals("Administrator")) {
-				if (userData.getCompany()!=id) {
+				if (userData.getCompanyID()!=id) {
 				throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
 				}
 			}
@@ -193,10 +193,10 @@ public class CompanyController {
 				
 			}
 			
-			if  (!companiesDAO.isCompanyExists(id)) {
+			if  (!companiesDAO.existsById(id)) {
 				throw new ApplicationException(ErrorType.COMPANY_ID_DOES_NOT_EXIST,ErrorType.COMPANY_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 				}
-			return companiesDAO.getCompanyByID(id);
+			return companiesDAO.findById(id).get();
 		}
 
 		

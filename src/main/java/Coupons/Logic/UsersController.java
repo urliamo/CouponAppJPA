@@ -1,5 +1,6 @@
 package Coupons.Logic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +69,7 @@ public class UsersController {
 
 		int token = generateEncryptedToken(loginForm.getUserName());
 		cacheManager.put(token, userData);
-		LoginData loginData = new LoginData(token,userData.getType(),userData.getUserID(), userData.getCompany());
+		LoginData loginData = new LoginData(token,userData.getType(),userData.getUserID(), userData.getCompanyID());
 		return loginData;
 	}
 
@@ -101,23 +102,23 @@ public class UsersController {
 		if (usersDao.existsByEmail(user.getEmail())) {
 			throw new ApplicationException(ErrorType.EXISTING_EMAIL, ErrorType.EXISTING_EMAIL.getInternalMessage(), false);
 		}
-		if ((user.getCompanyId() != null && user.getType().equals(ClientType.Customer))) {
+		if ((user.getCompany() != null && user.getType().equals(ClientType.Customer))) {
 			throw new ApplicationException(ErrorType.COMPANY_ID_NOT_TYPE, ErrorType.COMPANY_ID_NOT_TYPE.getInternalMessage(), false);
 		}
 		if (user.getType().equals(ClientType.Company)) {
-			if(user.getCompanyId() == null) {
+			if(user.getCompany() == null) {
 			throw new ApplicationException(ErrorType.COMPANY_TYPE_NO_ID, ErrorType.COMPANY_TYPE_NO_ID.getInternalMessage(), false);
 			}
-			if (user.getCompanyId() < 1) {
+			if (user.getCompany().getCompanyID() < 1) {
 				throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
 				
 			}
-			if(!companiesDAO.isCompanyExists(user.getCompanyId())) {
+			if(!companiesDAO.existsById(user.getCompany().getCompanyID())) {
 				throw new ApplicationException(ErrorType.COMPANY_ID_DOES_NOT_EXIST, ErrorType.COMPANY_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 			}
 		}
 		
-		return usersDao.createUser(user);
+		return usersDao.save(user).getId();
 	}
 
 	
@@ -141,13 +142,13 @@ public class UsersController {
 			throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
 			
 		}
-		if (!usersDao.isUserIDExist(user.getId())) {
+		if (!usersDao.existsById(user.getId())) {
 			throw new ApplicationException(ErrorType.USER_ID_DOES_NOT_EXIST, ErrorType.USER_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 		}
-		if (usersDao.isUserNameExist(user.getUserName())) {
+		if (usersDao.existsByUserName(user.getUserName())) {
 			throw new ApplicationException(ErrorType.NAME_IS_ALREADY_EXISTS, ErrorType.NAME_IS_ALREADY_EXISTS.getInternalMessage(), false);
 		}
-		usersDao.updateUser(user);
+		usersDao.save(user);
 	}
 
 	public void deleteUser(long userId, UserData userData) throws ApplicationException {
@@ -160,10 +161,10 @@ public class UsersController {
 			throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
 			
 		}
-		if (!usersDao.isUserIDExist(userId)) {
+		if (!usersDao.existsById(userId)) {
 			throw new ApplicationException(ErrorType.USER_ID_DOES_NOT_EXIST, ErrorType.USER_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 		}
-		usersDao.deleteUserByID(userId); 
+		usersDao.deleteById(userId); 
 	}
 
 	
@@ -182,8 +183,11 @@ public class UsersController {
 		if(!userData.getType().name().equals("Administrator"))
 		throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
 
-		return usersDao.getAllUsers();
+		List<User> users = new ArrayList<User>();
 
+		usersDao.findAll().forEach(users::add);
+
+		return users;
 	}
 	
 	
@@ -200,10 +204,10 @@ public class UsersController {
 			
 		}
 		
-		if (!usersDao.isUserIDExist(userId)) {
+		if (!usersDao.existsById(userId)) {
 			throw new ApplicationException(ErrorType.USER_ID_DOES_NOT_EXIST, ErrorType.USER_ID_DOES_NOT_EXIST.getInternalMessage(),	false);
 		}
-		return usersDao.getUserByID(userId);
+		return usersDao.findById(userId).get();
 
 	}
 	public String getUserName(long userId, UserData userData) throws ApplicationException {
@@ -219,10 +223,10 @@ public class UsersController {
 			
 		}
 		
-		if (!usersDao.isUserIDExist(userId)) {
+		if (!usersDao.existsById(userId)) {
 			throw new ApplicationException(ErrorType.USER_ID_DOES_NOT_EXIST, ErrorType.USER_ID_DOES_NOT_EXIST.getInternalMessage(),	false);
 		}
-		return usersDao.getUserName(userId);
+		return usersDao.findById(userId).get().getUserName();
 
 	}
 

@@ -94,10 +94,10 @@ public class Coupon {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public Long getId() {
+	public Long getCouponId() {
 		return coupon_Id;
 	}
-	public void setId(Long couponId) {
+	public void setCouponId(Long couponId) {
 		this.coupon_Id = couponId;
 	}
 	public int getAmount() {
@@ -119,10 +119,10 @@ public class Coupon {
 	public void setendDate(Date endDate) {
 		this.endDate = endDate;
 	}
-	public Company getcompany() {
+	public Company getCompany() {
 		return company;
 	}
-	public void setcompanyId(Company company) {
+	public void setCompany(Company company) {
 		this.company = company;
 	}
 	public Category getCategory() {
