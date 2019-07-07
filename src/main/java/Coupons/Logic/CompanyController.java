@@ -26,6 +26,7 @@ public class CompanyController {
 
 	@Autowired
 	private Coupons.DB.ICompaniesDAO companiesDAO;
+	
 	@Autowired
 	private Coupons.DB.IPurchasesDAO purchasesDAO;
 	
@@ -57,7 +58,7 @@ public class CompanyController {
 		NameUtils.isValidName(company.getName());
 		EmailUtils.isValidEmail(company.getEmail());
 
-		if (company.getCompanyID() != null) {
+		if (company.getId() != 0) {
 			throw new ApplicationException(ErrorType.COMPANY_ID_MUST_BE_ASSIGNED, ErrorType.COMPANY_ID_MUST_BE_ASSIGNED.getInternalMessage(), true);
 		}
 		
@@ -67,7 +68,7 @@ public class CompanyController {
 		if (companiesDAO.existsByName(company.getName())) {
 			throw new ApplicationException(ErrorType.NAME_IS_ALREADY_EXISTS, ErrorType.NAME_IS_ALREADY_EXISTS.getInternalMessage(), false);
 		}
-			return companiesDAO.save(company).getCompanyID();
+			return companiesDAO.save(company).getId();
 		
 	}
 	
@@ -86,13 +87,13 @@ public class CompanyController {
 			throw new ApplicationException(ErrorType.EMPTY, ErrorType.EMPTY.getInternalMessage(), false);
 		}
 		if (!userData.getType().name().equals("Administrator")) {
-			if (userData.getCompanyID()!=company.getCompanyID()) {
+			if (userData.getCompanyID()!=company.getId()) {
 			throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
 		}
 		}
 		NameUtils.isValidName(company.getName());
 		EmailUtils.isValidEmail(company.getEmail());
-		if (company.getCompanyID() < 1|| company.getCompanyID()==null) {
+		if (company.getId() < 1) {
 			throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
 			
 		}
@@ -102,11 +103,11 @@ public class CompanyController {
 		if (companiesDAO.existsByName(company.getName())) {
 			throw new ApplicationException(ErrorType.NAME_IS_ALREADY_EXISTS, ErrorType.NAME_IS_ALREADY_EXISTS.getInternalMessage(), false);
 		}
-		if (!companiesDAO.existsById(company.getCompanyID())) {
+		if (!companiesDAO.existsById(company.getId())) {
 			throw new ApplicationException(ErrorType.COMPANY_ID_DOES_NOT_EXIST, ErrorType.COMPANY_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 		}
 				
-		if (companiesDAO.findById(company.getCompanyID()).get().getName()!= company.getName()) {
+		if (companiesDAO.findById(company.getId()).get().getName()!= company.getName()) {
 			throw new ApplicationException(ErrorType.NAME_IS_IRREPLACEABLE, ErrorType.NAME_IS_IRREPLACEABLE.getInternalMessage(), false);
 		}
 		else {

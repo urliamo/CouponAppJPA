@@ -20,54 +20,54 @@ public interface ICouponsDAO extends CrudRepository<Coupon, Long>{
 	 * @param title     Receive a title
 	 * @return This function return true if exist
 	 */
-	public boolean existsByCompanyIdAndTitle(long companyId, String title);
+	public boolean existsByCompanyCompanyIdAndTitle(long companyId, String title);
 
 	/**
 	 * @param couponId  Receive a coupon id
 	 * @param companyId Receive a company id
 	 * @return This function return true if exist
 	 */
-	public boolean existsByIdAndCompanyId(long couponId, long companyId);
+	public boolean existsByCouponIdAndCompanyCompanyId(long couponId, long companyId);
 
 	/**
 	 * @param companyId Receive a company id
 	 * @return This function return list of coupons by some values
 	 */
-	public List<Coupon> findByCompanyId(long companyId);
+	public List<Coupon> findByCompanyCompanyId(long companyId);
 
 	/**
 	 * @param companyId Receive a company id
 	 * @param category  Receive a category
 	 * @return This function return list of coupons by some values
 	 */
-	public List<Coupon> findByCompanyIdAndCategory(long companyId, Category category);
+	public List<Coupon> findByCompanyCompanyIdAndCategory(long companyId, Category category);
 
 	/**
 	 * @param companyId Receive a company id
 	 * @param maxPrice  Receive a max price
 	 * @return This function return list of coupons by some values
 	 */
-	public List<Coupon> findByCompanyIdAndPriceLessThanEqual(long companyId, double maxPrice);
+	public List<Coupon> findByCompanyCompanyIdAndPriceLessThanEqual(long companyId, double maxPrice);
 
 	/**
 	 * @param customerId Receive a customer id
 	 * @return This function return list of coupons by some values
 	 */
-	public List<Coupon> findByPurchasesCustomerId(long customerId);
+	public List<Coupon> findByPurchasesCustomerCustomerId(long customerId);
 
 	/**
 	 * @param customerId Receive a customer id
 	 * @param category   Receive a category
 	 * @return This function return list of coupons by some values
 	 */
-	public List<Coupon> findByPurchasesCustomerIdAndCategory(long customerId, Category category);
+	public List<Coupon> findByPurchasesCustomerCustomerIdAndCategory(long customerId, Category category);
 
 	/**
 	 * @param customerId Receive a customer id
 	 * @param maxPrice   Receive a map price
 	 * @return This function return list of coupons by some values
 	 */
-	public List<Coupon> findByPurchasesCustomerIdAndPriceLessThanEqual(long customerId, double maxPrice);
+	public List<Coupon> findByPurchasesCustomerCustomerIdAndPriceLessThanEqual(long customerId, double maxPrice);
 
 	/**
 	 * @param couponId Receive a coupon id

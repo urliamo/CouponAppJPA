@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -16,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -23,12 +25,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import Coupons.Enums.Category;
 
+@Entity
+@Table(name = "coupons")
 public class Coupon {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "COUPON_ID", nullable = false, unique = true, columnDefinition = "BIGINT(20) UNSIGNED")
-	private long coupon_Id;
+	private long couponId;
 
 	@Column(name = "CATEGORY", nullable = false, unique = false, length = 40)
 	@Enumerated(EnumType.STRING)
@@ -95,10 +99,10 @@ public class Coupon {
 		this.title = title;
 	}
 	public Long getCouponId() {
-		return coupon_Id;
+		return couponId;
 	}
 	public void setCouponId(Long couponId) {
-		this.coupon_Id = couponId;
+		this.couponId = couponId;
 	}
 	public int getAmount() {
 		return amount;

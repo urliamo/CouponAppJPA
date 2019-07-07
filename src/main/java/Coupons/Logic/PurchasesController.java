@@ -78,10 +78,10 @@ public void purchaseCoupon(Purchase purchase, UserData userData) {
 			throw new ApplicationException(ErrorType.NOT_ENOUGH_COUPONS_IN_STOCK, ErrorType.NOT_ENOUGH_COUPONS_IN_STOCK.getInternalMessage()+couponDB.getAmount(), false);
 		}
 		DateUtils.validateDates(couponDB.getstartDate(), couponDB.getendDate());
-		if (couponDB.getCompany().getCompanyID()<1) {
+		if (couponDB.getCompany().getId()<1) {
 			throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
 		}
-		if (!companiesDAO.existsById(couponDB.getCompany().getCompanyID())) {
+		if (!companiesDAO.existsById(couponDB.getCompany().getId())) {
 			throw new ApplicationException(ErrorType.COMPANY_ID_DOES_NOT_EXIST, ErrorType.COMPANY_ID_DOES_NOT_EXIST.getInternalMessage(),false);
 		}
 		if (!couponsDAO.existsById(couponDB.getCouponId())) {
@@ -164,7 +164,7 @@ public void deletePurchase(long purchaseID, UserData userData) throws Applicatio
 		throw new ApplicationException(ErrorType.PURCHASE_ID_DOES_NOT_EXIST,ErrorType.PURCHASE_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 	}
 	if (!userData.getType().name().equals("Customer")) {
-		if (!purchasesDAO.existsByIdAndCustomerId(purchaseID, userData.getUserID())) {
+		if (!purchasesDAO.existsByPurchaseIdAndCustomerCustomerId(purchaseID, userData.getUserID())) {
 			throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH,ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
 		}
 		throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
@@ -220,7 +220,7 @@ public void deletePurchase(long purchaseID, UserData userData) throws Applicatio
 				throw new ApplicationException(ErrorType.CUSTOMER_ID_DOES_NOT_EXIST, ErrorType.CUSTOMER_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 
 			}
-			return couponsDAO.findByPurchasesCustomerId(customerID);
+			return couponsDAO.findByPurchasesCustomerCustomerId(customerID);
 			
 
 	}
@@ -244,7 +244,7 @@ public List<Purchase> getCustomerPurchases(long customerId, UserData userData) t
 		throw new ApplicationException(ErrorType.CUSTOMER_ID_DOES_NOT_EXIST, ErrorType.CUSTOMER_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 
 	}
-	return purchasesDAO.findByCustomerId(customerId);
+	return purchasesDAO.findByCustomerCustomerId(customerId);
 }
 
 
@@ -286,7 +286,7 @@ public int getCustomerPurchaseAmount(long customerId, UserData userData) throws 
 	}
 	
 
-	List<Purchase> purchases = purchasesDAO.findByCustomerId(customerId);
+	List<Purchase> purchases = purchasesDAO.findByCustomerCustomerId(customerId);
 
 	int amount = 0;
 

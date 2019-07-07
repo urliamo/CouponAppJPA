@@ -12,7 +12,7 @@ public class UserData {
 	private Long companyID;
 	
 	
-	public UserData(long userID,String userName, ClientType type, long companyID) {
+	public UserData(long userID,String userName, ClientType type, Long companyID) {
 		this.setUserID(userID);
 		this.setUserName(userName);
 		this.setType(type);

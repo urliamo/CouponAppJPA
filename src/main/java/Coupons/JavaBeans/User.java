@@ -15,7 +15,7 @@ import Coupons.Enums.ClientType;
 
 
 @Entity
-@Table(name = "Users")
+@Table(name = "users")
 public class User {
 	
 	@Id
@@ -32,7 +32,7 @@ public class User {
 	@Column(name = "PASSWORD", nullable = false, unique = false, length = 50)
 	private String password;
 
-	@Column(name = "CATEGORY", nullable = false, unique = false, length = 40)
+	@Column(name = "TYPE", nullable = false, unique = false, length = 40)
 	@Enumerated(EnumType.STRING)
 	private ClientType type;
 

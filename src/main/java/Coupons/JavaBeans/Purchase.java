@@ -3,21 +3,24 @@ package Coupons.JavaBeans;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
+@Entity
+@Table(name = "purchases")
 public class Purchase {
 
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "PURCHASE_ID", nullable = false, unique = true, columnDefinition = "BIGINT(20) UNSIGNED")
-	private long purchase_Id;
+	private long purchaseId;
 
 	@Column(name = "AMOUNT", nullable = false, unique = false, columnDefinition = "INT(11) UNSIGNED")
 	private int amount;
@@ -44,12 +47,12 @@ public class Purchase {
 
 
 		public long getPurchaseID() {
-			return purchase_Id;
+			return purchaseId;
 		}
 
 
 		public void setPurchaseID(long purchaseID) {
-			this.purchase_Id = purchaseID;
+			this.purchaseId = purchaseID;
 		}
 
 
@@ -82,7 +85,7 @@ public class Purchase {
 		}
 		@Override
 		public String toString() {
-			return "Purchase [purchaseID=" + purchase_Id + ", couponID=" + coupon.getCouponId() + ", amount=" + amount + "]";
+			return "Purchase [purchaseID=" + purchaseId + ", couponID=" + coupon.getCouponId() + ", amount=" + amount + "]";
 		}
 
 

@@ -4,19 +4,22 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
+@Entity
+@Table(name = "customers")
 public class Customer {
 	
 	@Id
 	@Column(name = "CUSTOMER_ID", nullable = false, unique = true, columnDefinition = "BIGINT(20) UNSIGNED")
-	private long customer_Id;
+	private long customerId;
 
 	@Column(name = "FIRST_NAME", nullable = false, unique = false, length = 20)
 	private String firstName;
@@ -53,10 +56,10 @@ public class Customer {
 		}
 		
 		public long getCustomerId() {
-			return customer_Id;
+			return customerId;
 		}
 		public void setCustomerId(long id) {
-			this.customer_Id = id;
+			this.customerId = id;
 		}
 		
 		public Customer() {

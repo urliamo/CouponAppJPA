@@ -15,7 +15,7 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@Entity
+	@Entity
 	@Table(name = "companies")
 	@JsonIgnoreProperties({ "coupons", "users" })
 	public class Company implements Serializable {
@@ -31,13 +31,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 		@Id
 		@GeneratedValue(strategy = GenerationType.AUTO)
 		@Column(name = "COMPANY_ID", nullable = false, unique = true, columnDefinition = "BIGINT(20) UNSIGNED")
-		private long company_Id;
+		private long companyId;
 
 		@Column(name = "NAME", nullable = false, unique = true, length = 25)
 		private String name;
 
-		@Column(name = "PHONE_NUMBER", nullable = false, unique = false, length = 12)
-		private String phoneNumber;
 
 		@Column(name = "EMAIL", nullable = false, unique = false, length = 25)
 		private String email;
@@ -68,8 +66,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 
-    public void setCompanyID(Long id) {
-        this.company_Id = id;
+    public void setId(long id) {
+        this.companyId = id;
     }
 
     public String getName() {
@@ -82,8 +80,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
         return this.email;
     }
 
-    public Long getCompanyID() {
-        return this.company_Id;
+    public long getId() {
+        return this.companyId;
     }
     
 

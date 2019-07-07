@@ -18,17 +18,6 @@ import Coupons.JavaBeans.UserData;
 import Coupons.Utils.NameUtils;
 import Coupons.Utils.PasswordUtils;
 
-//import com.avi.coupons.beans.User;
-//import com.avi.coupons.beans.UserData;
-//import com.avi.coupons.dao.CustomersDAO;
-//import com.avi.coupons.dao.UsersDAO;
-//import com.avi.coupons.enums.ClientType;
-//import com.avi.coupons.enums.ErrorType;
-//import com.avi.coupons.exceptions.ApplicationException;
-//import com.avi.coupons.utils.IdUtils;
-//import com.avi.coupons.utils.NameUtils;
-//import com.avi.coupons.utils.PasswordUtils;
-//import com.avi.coupons.utils.TypeUtils;
 
 @Controller
 public class UsersController {
@@ -47,9 +36,10 @@ public class UsersController {
 	}
 	
 	public LoginData login(LoginForm loginForm) throws ApplicationException {
-		if (loginForm == null)
+		if (loginForm == null) {
 			throw new ApplicationException(ErrorType.EMPTY, ErrorType.EMPTY.getInternalMessage(), false);
-
+		}
+		
 		NameUtils.isValidName(loginForm.getUserName());
 		PasswordUtils.isValidPassword(loginForm.getPassword());
 
@@ -58,14 +48,14 @@ public class UsersController {
 		}
 		User user = usersDao.findByUserNameAndPassword(loginForm.getUserName(), loginForm.getPassword());
 
-		if (user == null)
+		if (user == null) {
 			throw new ApplicationException(ErrorType.LOGIN_FAILED, ErrorType.LOGIN_FAILED.getInternalMessage(), true);
-
+		}
 		Long company_Id = null;
 		if (user.getCompany() != null) {
-			company_Id = user.getCompany().getCompanyID();
+			company_Id = user.getCompany().getId();
 		}
-		UserData userData = new UserData(user.getId(),user.getUserName(),ClientType.Company, company_Id);
+		UserData userData = new UserData(user.getId(),user.getUserName(),user.getType(), company_Id);
 
 		int token = generateEncryptedToken(loginForm.getUserName());
 		cacheManager.put(token, userData);
@@ -75,10 +65,10 @@ public class UsersController {
 
 	
 
-	private int generateEncryptedToken(String username) {
-		String token = "this too" + username + "shall hash";
+	private int generateEncryptedToken(String stringToHash) {
+		String encriptedString = "this too" + stringToHash + "shall hash";
 		
-		return token.hashCode();
+		return encriptedString.hashCode();
 	}
 
 	public long createUser(User user, UserData userData) throws ApplicationException {
@@ -109,11 +99,11 @@ public class UsersController {
 			if(user.getCompany() == null) {
 			throw new ApplicationException(ErrorType.COMPANY_TYPE_NO_ID, ErrorType.COMPANY_TYPE_NO_ID.getInternalMessage(), false);
 			}
-			if (user.getCompany().getCompanyID() < 1) {
+			if (user.getCompany().getId() < 1) {
 				throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
 				
 			}
-			if(!companiesDAO.existsById(user.getCompany().getCompanyID())) {
+			if(!companiesDAO.existsById(user.getCompany().getId())) {
 				throw new ApplicationException(ErrorType.COMPANY_ID_DOES_NOT_EXIST, ErrorType.COMPANY_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 			}
 		}
