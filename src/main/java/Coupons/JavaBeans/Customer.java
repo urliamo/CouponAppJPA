@@ -27,12 +27,6 @@ public class Customer {
 	@Column(name = "LAST_NAME", nullable = true, unique = false, length = 20)
 	private String lastName;
 
-	@Column(name = "PHONE_NUMBER", nullable = false, unique = false, length = 10)
-	private String phoneNumber;
-
-	@Column(name = "EMAIL", nullable = false, unique = false, length = 25)
-	private String email;
-
 	@JoinColumn(name = "USER")
 	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private User user;

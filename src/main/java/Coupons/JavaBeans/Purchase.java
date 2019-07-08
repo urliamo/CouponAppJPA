@@ -29,9 +29,6 @@ public class Purchase {
 	@Temporal(TemporalType.DATE)
 	private Date date;
 
-	
-
-
 	@JoinColumn(name = "CUSTOMER", nullable = false, unique = false)
 	@ManyToOne
 	private Customer customer;
@@ -43,6 +40,7 @@ public class Purchase {
 		
 		
 		public Purchase() {
+			super();
 		}
 
 
@@ -61,7 +59,7 @@ public class Purchase {
 		}
 
 
-		public void setCouponID(Coupon coupon) {
+		public void setCoupon(Coupon coupon) {
 			this.coupon = coupon;
 		}
 
@@ -94,7 +92,7 @@ public class Purchase {
 		}
 
 
-		public void setCustomerID(Customer customer) {
+		public void setCustomer(Customer customer) {
 			this.customer = customer;
 		}
 }

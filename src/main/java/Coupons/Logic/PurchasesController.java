@@ -8,11 +8,15 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import Coupons.Enums.Category;
 import Coupons.Enums.ErrorType;
 import Coupons.Exceptions.ApplicationException;
 import Coupons.JavaBeans.Coupon;
+import Coupons.JavaBeans.Customer;
 import Coupons.JavaBeans.Purchase;
 import Coupons.JavaBeans.UserData;
 import Coupons.Utils.DateUtils;
@@ -50,7 +54,7 @@ public class PurchasesController {
 	 * @throws		coupon out of date!
 	 * @throws 		coupon already owned by customer!
 	 */
-	
+	@Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, readOnly = false, timeout = 5)
 public void purchaseCoupon(Purchase purchase, UserData userData) {
 	try
 	{
@@ -96,7 +100,9 @@ public void purchaseCoupon(Purchase purchase, UserData userData) {
 		// update coupon
 		couponsDAO.save(couponDB);
 
-		
+		Customer customer = customerDAO.findById(purchase.getCustomer().getCustomerId()).get();
+		purchase.setCoupon(couponDB);
+		purchase.setCustomer(customer);
 		purchase.setDate(new Date());
 
 		purchasesDAO.save(purchase);

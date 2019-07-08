@@ -21,7 +21,7 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "USER_ID", nullable = false, unique = true, columnDefinition = "BIGINT(20) UNSIGNED")
-	private long user_Id;
+	private long userId;
 
 	@Column(name = "USER_NAME", nullable = false, unique = true, length = 25)
 	private String userName;
@@ -47,11 +47,11 @@ public class User {
 	}
 
 	public long getId() {
-		return user_Id;
+		return userId;
 	}
 
-	public void setId(Long id) {
-		this.user_Id = id;
+	public void setId(long id) {
+		this.userId = id;
 	}
 
 	public String getUserName() {

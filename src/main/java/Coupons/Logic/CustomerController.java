@@ -6,6 +6,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import Coupons.Enums.ErrorType;
 import Coupons.Exceptions.ApplicationException;
@@ -51,9 +54,9 @@ public class CustomerController{
 				throw new ApplicationException(ErrorType.USER_ID_MISMATCH, ErrorType.USER_ID_MISMATCH.getInternalMessage(), true);
 			}
 		}
-		if (!customerDAO.existsById(customerID))
+		if (!customerDAO.existsById(customerID)) {
 			throw new ApplicationException(ErrorType.CUSTOMER_ID_DOES_NOT_EXIST,ErrorType.CUSTOMER_ID_DOES_NOT_EXIST.getInternalMessage(), false);
-
+		}
 		return  customerDAO.findById(customerID).get();	
 		
 	}
@@ -82,6 +85,7 @@ public class CustomerController{
 		}
 	}
 	
+	@Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, readOnly = false, timeout = 5)
 	public void createCustomer(Customer customer) throws ApplicationException {
 		try
 			{
