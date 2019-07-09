@@ -173,29 +173,6 @@ public class CouponController {
 		return couponsDAO.findById(couponID).get();
 	}
 	
-	/**
-	 * returns a list of all company coupon IDs of a 
-	 * 
-	 * @param  companyID the ID of the company coupons to return
-	 * @see 		companiesDAO
-	 * @see			JavaBeans.Coupon
-	 * @see			JavaBeans.Category
-	 * @return 		ArrayList of coupons
-	 */
-	
-	/*public List<Long> getCompanyCouponIDs(long companyID, UserData userData) throws ApplicationException{
-		if (companyID<1) {
-			throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
-			
-		}
-		if (userData.getCompany() != companyID)
-			throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
-
-		if (companiesDAO.isCompanyExists(companyID)) {
-			throw new ApplicationException(ErrorType.COMPANY_ID_DOES_NOT_EXIST, ErrorType.COMPANY_ID_DOES_NOT_EXIST.getInternalMessage(), false);
-		}
-		return couponsDAO.getCompanyCouponsID(companyID);
-	}*/
 	
 	/**
 	 * returns a list of all  coupons of a specified category

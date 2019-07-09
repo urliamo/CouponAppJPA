@@ -114,91 +114,81 @@ public void purchaseCoupon(Purchase purchase, UserData userData) {
 	}
 }
 
-public void deleteCustomerPurchases(long customerId, UserData userData) throws ApplicationException {
 
-		if (customerId<1) {
-			throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
-		}
-		
-		if (userData.getType().name().equals("Customer")) {
-			if (customerId != userData.getUserID()) {
-				throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
-			}		
-		}
-		if (userData.getType().name().equals("Company")) {
-			throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
-		}
-		if (!customerDAO.existsById(customerId)) {
-			throw new ApplicationException(ErrorType.CUSTOMER_ID_DOES_NOT_EXIST, ErrorType.CUSTOMER_ID_DOES_NOT_EXIST.getInternalMessage(), false);
 
-		}
-		purchasesDAO.deleteById(customerId);
-
-	
-	
-}
-
-public void deleteCompanyPurchases(long companyId, UserData userData) throws ApplicationException {
-	
-		if (companyId<1) {
-			throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
-		}
-		
-		if (userData.getType().name().equals("Company")) {
-			if (companyId != userData.getCompanyID()) {
-				throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
-			}		
-		}
-		if (userData.getType().name().equals("Customer")) {
-			throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
-		}
-		if (!companiesDAO.existsById(companyId)) {
-			throw new ApplicationException(ErrorType.COMPANY_ID_DOES_NOT_EXIST, ErrorType.COMPANY_ID_DOES_NOT_EXIST.getInternalMessage(), false);
-
-		}
-		purchasesDAO.deleteById(companyId);
-
-	
-}
 
 public void deletePurchase(long purchaseID, UserData userData) throws ApplicationException {
-
-	if (purchaseID<1) {
-		throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
-	}
-	if (!purchasesDAO.existsById(purchaseID)) {
-		throw new ApplicationException(ErrorType.PURCHASE_ID_DOES_NOT_EXIST,ErrorType.PURCHASE_ID_DOES_NOT_EXIST.getInternalMessage(), false);
-	}
 	if (!userData.getType().name().equals("Customer")) {
 		if (!purchasesDAO.existsByPurchaseIdAndCustomerCustomerId(purchaseID, userData.getUserID())) {
 			throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH,ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
 		}
 		throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
 	}
+	if (purchaseID<1) {
+		throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
+	}
+	if (!purchasesDAO.existsById(purchaseID)) {
+		throw new ApplicationException(ErrorType.PURCHASE_ID_DOES_NOT_EXIST,ErrorType.PURCHASE_ID_DOES_NOT_EXIST.getInternalMessage(), false);
+	}
+	
 	
 	purchasesDAO.deleteById(purchaseID);
 
 }
-/*public void deleteCouponPurchases(long couponId, UserData userData)  throws ApplicationException{
-	
-		if (couponId<1) {
-			throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
-			
-		}
-		if (!userData.getType().name().equals("Company"))
-			throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
 
-		if (userData.getCompany() != couponsDAO.getOneCoupon(couponId).getCompany_id())
-			throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
+public List<Purchase> getCustomerPurchasesByCategory(long customerId, Category category, UserData userData)
+		throws ApplicationException {
 
-		if (!couponsDAO.isCouponExists(couponId)) {
-			throw new ApplicationException(ErrorType.COUPON_ID_DOES_NOT_EXIST, ErrorType.COUPON_ID_DOES_NOT_EXIST.getInternalMessage(), false);
-		}
-		purchasesDAO.deletePurchaseBycouponId(couponId);
+	if (!userData.getType().name().equals("Customer"))
+		throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
 
+	if (customerId != userData.getUserID())
+		throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
+
+	if (customerId<1) {
+		throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
+	}	
+	if (category == null) {
+		throw new ApplicationException(ErrorType.INVALID_CATEGORY, ErrorType.INVALID_CATEGORY.getInternalMessage(), false);
 	}
 
-*/
+	if (!customerDAO.existsById(customerId))
+		throw new ApplicationException(ErrorType.CUSTOMER_ID_DOES_NOT_EXIST,
+				ErrorType.CUSTOMER_ID_DOES_NOT_EXIST.getInternalMessage(), false);
+
+	return purchasesDAO.findByCustomerCustomerIdAndCouponCategory(customerId, category);
+
+}
+
+/**
+ * @param customerId Receive a customer id
+ * @param maxPrice   Receive a max price
+ * @param userData   Receive an userData
+ * @return This function return a purchase list
+ * @throws ApplicationException This function can throw an applicationException
+ */
+public List<Purchase> getCustomerPurchasesByMaxPrice(long customerId, double maxPrice, UserData userData)
+		throws ApplicationException {
+
+	if (!userData.getType().name().equals("Customer"))
+		throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
+
+	if (customerId != userData.getUserID())
+		throw new ApplicationException(ErrorType.USER_TYPE_MISMATCH, ErrorType.USER_TYPE_MISMATCH.getInternalMessage(), true);
+
+	if (customerId<1) {
+		throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
+	}	
+	if (maxPrice <0) {
+		throw new ApplicationException(ErrorType.INVALID_PRICE, ErrorType.INVALID_PRICE.getInternalMessage(), false);
+	}
+	if (!customerDAO.existsById(customerId))
+		throw new ApplicationException(ErrorType.CUSTOMER_ID_DOES_NOT_EXIST,
+				ErrorType.CUSTOMER_ID_DOES_NOT_EXIST.getInternalMessage(), false);
+
+	return purchasesDAO.findByCustomerCustomerIdAndCouponPriceLessThanEqual(customerId, maxPrice);
+
+}
 /**
  * returns a list of all customer coupons 
  * @see 		DB.CouponDAO

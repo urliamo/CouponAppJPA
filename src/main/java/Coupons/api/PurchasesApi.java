@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import Coupons.Enums.Category;
 import Coupons.Exceptions.ApplicationException;
 import Coupons.JavaBeans.Purchase;
 import Coupons.JavaBeans.UserData;
@@ -46,12 +47,7 @@ public class PurchasesApi {
 	}
 
 	/**
-	 * @param customerId Receive a customer id
-	 * @param request    Receive a httpServletRequest
-	 * @return This function return purchase amount
-	 * @throws ApplicationException This function can throw an applicationException
-	 */
-	
+
 
 	/**
 	 * @param request Receive a httpServletRequest
@@ -90,6 +86,40 @@ public class PurchasesApi {
 		UserData userData = (UserData) request.getAttribute("userData");
 
 		return purchasesController.getCustomerPurchaseAmount(customerId, userData);
+
+	}
+	
+	/**
+	 * @param customerId Receive a customer id
+	 * @param category   Receive a category
+	 * @param request    Receive a httpServletRequest
+	 * @return This function return a purchase list
+	 * @throws ApplicationException This function can throw an applicationException
+	 */
+	@GetMapping("/customer/category")
+	public List<Purchase> getCustomerCouponsByCategory(@RequestParam("customerId") long customerId,
+			@RequestParam("category") Category category, HttpServletRequest request) throws ApplicationException {
+
+		UserData userData = (UserData) request.getAttribute("userData");
+
+		return purchasesController.getCustomerPurchasesByCategory(customerId, category, userData);
+
+	}
+
+	/**
+	 * @param customerId Receive a customer id
+	 * @param maxPrice   Receive a max price
+	 * @param request    Receive a httpServletRequest
+	 * @return This function return a purchase list
+	 * @throws ApplicationException This function can throw an applicationException
+	 */
+	@GetMapping("/customer/price")
+	public List<Purchase> getCustomerCouponsByMaxPrice(@RequestParam("customerId") long customerId,
+			@RequestParam("maxPrice") double maxPrice, HttpServletRequest request) throws ApplicationException {
+
+		UserData userData = (UserData) request.getAttribute("userData");
+
+		return purchasesController.getCustomerPurchasesByMaxPrice(customerId, maxPrice, userData);
 
 	}
 
