@@ -42,7 +42,9 @@ INVALID_CATEGORY(600, "invalid category"),
 INVALID_IMAGE(600, "invalid image"), 
 NOT_ENOUGH_COUPONS_IN_STOCK(600, "not enough coupons in stuck to fulfill purchase, amount is:"), 
 PURCHASE_ID_DOES_NOT_EXIST(600,"no such purhcaseID in DB"), 
-CUSTOMER_NOT_ELIGIBLE(600,"customer is not eligibile to fight");
+CUSTOMER_NOT_ELIGIBLE(600,"customer is not eligibile to fight"),
+NO_OPPONENTS_AVAILABLE(600,"you stand alone!"),
+NO_VALID_COUPONS_TO_USE(600,"you have no valid coupons to fight with!");
 
 	
 	private int internalErrorCode;

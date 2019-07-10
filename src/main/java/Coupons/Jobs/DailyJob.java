@@ -1,12 +1,10 @@
 package Coupons.Jobs;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import Coupons.JavaBeans.Coupon;
 
 /**
  * runnable class in charge of deleting expired coupons.
@@ -16,13 +14,13 @@ import Coupons.JavaBeans.Coupon;
  * @param date the current time
  * @see 		JavaBeans.Coupon
  */
-public class CouponExpirationDailyJob implements Runnable {
+public class DailyJob implements Runnable {
 	
 	private boolean quit = false;
 	@Autowired
 	private  Coupons.DB.ICouponsDAO couponsDAO;
 	@Autowired
-	private  Coupons.DB.IPurchasesDAO purchasesDAO;
+	private  Coupons.DB.ICustomersDAO customersDAO;
 	
 	private LocalDate date = LocalDate.now();
 	
@@ -40,6 +38,8 @@ public class CouponExpirationDailyJob implements Runnable {
 				date = LocalDate.now();
 				//get expired coupons
 				couponsDAO.deleteExpiredCoupon();
+				customersDAO.setAllCustomersEligibile();
+
 			}
 			//wait 1 hour and check for date change
 			try {
@@ -56,7 +56,7 @@ public class CouponExpirationDailyJob implements Runnable {
 		}
 	}
 	
-	public CouponExpirationDailyJob() {
+	public DailyJob() {
 		super();
 		
 	}

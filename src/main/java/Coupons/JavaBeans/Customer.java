@@ -34,9 +34,27 @@ public class Customer {
 	@JsonIgnore
 	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	private List<Purchase> purchases;
+	
+	@Column(name = "ELIGIBLE", nullable = false, columnDefinition = "boolean default true")
+	private boolean isEligibile;
 
 	    
-	    public String getLastName() {
+	    public boolean isEligibile() {
+		return isEligibile;
+		}
+		    
+		public List<Purchase> getPurchases() {
+				return purchases;
+			}
+		
+		public void setPurchases(List<Purchase> purchases) {
+			this.purchases = purchases;
+		}
+		
+		public void setEligibile(boolean isEligibile) {
+			this.isEligibile = isEligibile;
+		}
+		public String getLastName() {
 			return lastName;
 		}
 		public void setLastName(String last_name) {

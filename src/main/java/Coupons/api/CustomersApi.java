@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import Coupons.Exceptions.ApplicationException;
 import Coupons.JavaBeans.Customer;
+import Coupons.JavaBeans.FightResults;
 import Coupons.JavaBeans.User;
 import Coupons.JavaBeans.UserData;
 import Coupons.Logic.CustomerController;
@@ -35,12 +36,25 @@ public class CustomersApi {
 		customerController.createCustomer(customer);
 	}
 	
+	
+	
 	@PutMapping
 	public void updateCustomer(@RequestBody Customer customer,HttpServletRequest request) throws ApplicationException {
 		UserData userData = (UserData) request.getAttribute("userData");
 		customerController.updateCustomer(customer, userData);
 	}
 	
+	@GetMapping("/fight")
+	public Customer getOpponent(HttpServletRequest request) throws ApplicationException {
+		UserData userData = (UserData) request.getAttribute("userData");
+		return customerController.getOpponentById(userData);
+	}
+	
+	@GetMapping("/fight/{opponentId}")
+	public FightResults fightOpponent(@PathVariable("opponentId") long opponentId,HttpServletRequest request) throws ApplicationException {
+		UserData userData = (UserData) request.getAttribute("userData");
+		return customerController.fightOpponent(opponentId, userData);
+	}
 	@GetMapping("/{customerId}")
 	public Customer getCustomer(@PathVariable("customerId") long customerId,HttpServletRequest request) throws ApplicationException {
 		UserData userData = (UserData) request.getAttribute("userData");

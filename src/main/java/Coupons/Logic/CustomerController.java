@@ -2,6 +2,7 @@ package Coupons.Logic;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import Coupons.Enums.ErrorType;
 import Coupons.Exceptions.ApplicationException;
+import Coupons.JavaBeans.Coupon;
 import Coupons.JavaBeans.Customer;
+import Coupons.JavaBeans.FightResults;
+import Coupons.JavaBeans.Purchase;
 import Coupons.JavaBeans.User;
 import Coupons.JavaBeans.UserData;
 import Coupons.Utils.EmailUtils;
@@ -26,6 +30,8 @@ public class CustomerController{
 	
 	@Autowired
 	private Coupons.DB.ICustomersDAO customerDAO;
+	@Autowired
+	private Coupons.DB.ICouponsDAO couponsDAO;
 
 	@Autowired
 	private Coupons.DB.IUsersDAO usersDAO;
@@ -211,19 +217,65 @@ public class CustomerController{
 		
 		List<Customer> customers = new ArrayList<Customer>();
 
-		customerDAO.findAll().forEach(customers::add);
-		
-		for (Customer c: customers){
-			if (c.getCustomerId()== userData.getUserID()){
-				customers.remove(c);
-			}
+		customerDAO.getOpponents(userData.getUserID()).forEach(customers::add);
+	
+		if (customers.isEmpty()){
+			throw new ApplicationException(ErrorType.NO_OPPONENTS_AVAILABLE, ErrorType.NO_OPPONENTS_AVAILABLE.getInternalMessage(), true);
+
 		}
-		
+			
 		Customer opponent = customers.get((int) Math.random()*customers.size());
 		
 		return opponent;
 	}
 
+	public FightResults fightOpponent(long opponentId, UserData userData) throws ApplicationException {
+		// TODO Auto-generated method stub
+		if (userData == null)
+			throw new ApplicationException(ErrorType.EMPTY, ErrorType.EMPTY.getInternalMessage(), false);
+
+		if (!userData.getType().name().equals("Customer")) {
+		
+				throw new ApplicationException(ErrorType.USER_ID_MISMATCH, ErrorType.USER_ID_MISMATCH.getInternalMessage(), true);
+			
+		}
+		if (!customerDAO.isCustomerEligible(userData.getUserID())) {
+			throw new ApplicationException(ErrorType.CUSTOMER_NOT_ELIGIBLE, ErrorType.CUSTOMER_NOT_ELIGIBLE.getInternalMessage(), false);
+
+		}
+		if (opponentId < 1 || userData.getUserID()<1) {
+			throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
+			
+		}
+		List<Coupon> opponentCoupons = new ArrayList<Coupon>();
+		couponsDAO.findByPurchasesCustomerCustomerId(opponentId).forEach(opponentCoupons::add);
+		List<Coupon> customerCoupons = new ArrayList<Coupon>();
+		couponsDAO.findByPurchasesCustomerCustomerId(userData.getUserID()).forEach(customerCoupons::add);
+		for (Coupon c: customerCoupons) {
+			if (c.getAmount()<1) {
+				customerCoupons.remove(c);
+			}
+		}
+		if (customerCoupons.isEmpty()){
+			throw new ApplicationException(ErrorType.NO_VALID_COUPONS_TO_USE, ErrorType.NO_VALID_COUPONS_TO_USE.getInternalMessage(), true);
+
+		}
+		Coupon customerCoupon = customerCoupons.get((int) Math.random()*customerCoupons.size());
+		Coupon opponentCoupon = opponentCoupons.get((int) Math.random()*customerCoupons.size());
+		customerDAO.setCustomerEligibile(false, userData.getUserID());
+		if (customerCoupon.getPrice()>opponentCoupon.getPrice()) {
+		Purchase bonus = new Purchase();
+		bonus.setAmount(1);
+		bonus.setCoupon(customerCoupon);
+		bonus.setCustomer(customerDAO.findById(userData.getUserID()).get());
+		bonus.setDate(new Date());
+		purchasesDAO.save(bonus);
+		}
+		FightResults fightResults = new FightResults(customerCoupon.getPrice(),opponentCoupon.getPrice());
+		return fightResults;
+	}
+	
+	
 	public List<Customer> getAllCustomers(UserData userData) throws ApplicationException {
 		// TODO Auto-generated method stub
 		if (userData == null)
