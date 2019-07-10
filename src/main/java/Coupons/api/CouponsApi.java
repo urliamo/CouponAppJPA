@@ -30,7 +30,7 @@ public class CouponsApi {
 
 	/**
 	 * @param coupon  Receive a coupon
-	 * @param request Receive a httpServletRequest
+	 * @param request httpServletRequest incoming request
 	 * @throws ApplicationException This function can throw an applicationException
 	 */
 	@PostMapping
@@ -43,8 +43,8 @@ public class CouponsApi {
 	}
 
 	/**
-	 * @param couponId  Receive a coupon id
-	 * @param companyId Receive a company id
+	 * @param couponId  long ID of coupon
+	 * @param companyId long ID of company
 	 * @param request   Receive a httpServletRequest
 	 * @throws ApplicationException This function can throw an applicationException
 	 */
@@ -60,7 +60,7 @@ public class CouponsApi {
 
 	/**
 	 * @param coupon  Receive a coupon
-	 * @param request Receive a httpServletRequest
+	 * @param request httpServletRequest incoming request
 	 * @throws ApplicationException This function can throw an applicationException
 	 */
 	@PutMapping
@@ -73,7 +73,7 @@ public class CouponsApi {
 	}
 
 	/**
-	 * @param request Receive a httpServletRequest
+	 * @param request httpServletRequest incoming request
 	 * @return This function return coupon list
 	 * @throws ApplicationException This function can throw an applicationException
 	 */
@@ -86,7 +86,7 @@ public class CouponsApi {
 	}
 
 	/**
-	 * @param couponId Receive a coupon id
+	 * @param couponId long ID of coupon
 	 * @return This function return a coupon
 	 * @throws ApplicationException This function can throw an applicationException
 	 */
@@ -98,7 +98,7 @@ public class CouponsApi {
 	}
 
 	/**
-	 * @param companyId Receive a company id
+	 * @param companyId long ID of company
 	 * @param request   Receive a httpServletRequest
 	 * @return This function return a coupon list
 	 * @throws ApplicationException This function can throw an applicationException
@@ -114,7 +114,7 @@ public class CouponsApi {
 	}
 
 	/**
-	 * @param companyId Receive a company id
+	 * @param companyId long ID of company
 	 * @param Category  Receive a Categories
 	 * @param request   Receive a httpServletRequest
 	 * @return This function return a coupon list
@@ -131,7 +131,7 @@ public class CouponsApi {
 	}
 
 	/**
-	 * @param companyId Receive a company id
+	 * @param companyId long ID of company
 	 * @param maxPrice  Receive a max price
 	 * @param request   Receive a httpServletRequest
 	 * @return This function return a coupon list
@@ -148,7 +148,7 @@ public class CouponsApi {
 	}
 
 	/**
-	 * @param customerId Receive a customer id
+	 * @param customerId long ID of customer
 	 * @param request    Receive a httpServletRequest
 	 * @return This function return a coupon list
 	 * @throws ApplicationException This function can throw an applicationException
@@ -164,7 +164,7 @@ public class CouponsApi {
 	}
 
 	/**
-	 * @param customerId Receive a customer id
+	 * @param customerId long ID of customer
 	 * @param Category   Receive a Categories
 	 * @param request    Receive a httpServletRequest
 	 * @return This function return a coupon list
@@ -181,7 +181,7 @@ public class CouponsApi {
 	}
 
 	/**
-	 * @param customerId Receive a customer id
+	 * @param customerId long ID of customer
 	 * @param maxPrice   Receive a max price
 	 * @param request    Receive a httpServletRequest
 	 * @return This function return a coupon list

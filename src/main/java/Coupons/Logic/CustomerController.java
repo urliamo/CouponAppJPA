@@ -61,6 +61,7 @@ public class CustomerController{
 		
 	}
 	
+	
 	public void deleteCustomer(long customerId, UserData userData) {
 		try
 		{
@@ -170,6 +171,8 @@ public class CustomerController{
 
 		}
 	
+	
+	
 	public String getCustomerName(long customerId, UserData userData) throws ApplicationException {
 		if (userData == null)
 			throw new ApplicationException(ErrorType.EMPTY, ErrorType.EMPTY.getInternalMessage(), false);
@@ -191,6 +194,35 @@ public class CustomerController{
 
 	}
 
+	public Customer getOpponentById(UserData userData) throws ApplicationException {
+		// TODO Auto-generated method stub
+		if (userData == null)
+			throw new ApplicationException(ErrorType.EMPTY, ErrorType.EMPTY.getInternalMessage(), false);
+
+		if (!userData.getType().name().equals("Customer")) {
+		
+				throw new ApplicationException(ErrorType.USER_ID_MISMATCH, ErrorType.USER_ID_MISMATCH.getInternalMessage(), true);
+			
+		}
+		if (!customerDAO.isCustomerEligible(userData.getUserID())) {
+			throw new ApplicationException(ErrorType.CUSTOMER_NOT_ELIGIBLE, ErrorType.CUSTOMER_NOT_ELIGIBLE.getInternalMessage(), true);
+
+		}
+		
+		List<Customer> customers = new ArrayList<Customer>();
+
+		customerDAO.findAll().forEach(customers::add);
+		
+		for (Customer c: customers){
+			if (c.getCustomerId()== userData.getUserID()){
+				customers.remove(c);
+			}
+		}
+		
+		Customer opponent = customers.get((int) Math.random()*customers.size());
+		
+		return opponent;
+	}
 
 	public List<Customer> getAllCustomers(UserData userData) throws ApplicationException {
 		// TODO Auto-generated method stub

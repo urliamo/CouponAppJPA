@@ -16,61 +16,61 @@ import Coupons.JavaBeans.Coupon;
 public interface ICouponsDAO extends CrudRepository<Coupon, Long>{
 
 	/**
-	 * @param companyId Receive a company id
+	 * @param companyId long ID of company
 	 * @param title     Receive a title
 	 * @return This function return true if exist
 	 */
 	public boolean existsByCompanyCompanyIdAndTitle(long companyId, String title);
 
 	/**
-	 * @param couponId  Receive a coupon id
-	 * @param companyId Receive a company id
+	 * @param couponId  long ID of coupon
+	 * @param companyId long ID of company
 	 * @return This function return true if exist
 	 */
 	public boolean existsByCouponIdAndCompanyCompanyId(long couponId, long companyId);
 
 	/**
-	 * @param companyId Receive a company id
+	 * @param companyId long ID of company
 	 * @return This function return list of coupons by some values
 	 */
 	public List<Coupon> findByCompanyCompanyId(long companyId);
 
 	/**
-	 * @param companyId Receive a company id
-	 * @param category  Receive a category
+	 * @param companyId long ID of company
+	 * @param category  Category enum of coupon category
 	 * @return This function return list of coupons by some values
 	 */
 	public List<Coupon> findByCompanyCompanyIdAndCategory(long companyId, Category category);
 
 	/**
-	 * @param companyId Receive a company id
+	 * @param companyId long ID of company
 	 * @param maxPrice  Receive a max price
 	 * @return This function return list of coupons by some values
 	 */
 	public List<Coupon> findByCompanyCompanyIdAndPriceLessThanEqual(long companyId, double maxPrice);
 
 	/**
-	 * @param customerId Receive a customer id
+	 * @param customerId long ID of customer
 	 * @return This function return list of coupons by some values
 	 */
 	public List<Coupon> findByPurchasesCustomerCustomerId(long customerId);
 
 	/**
-	 * @param customerId Receive a customer id
-	 * @param category   Receive a category
+	 * @param customerId long ID of customer
+	 * @param category   Category enum of coupon category
 	 * @return This function return list of coupons by some values
 	 */
 	public List<Coupon> findByPurchasesCustomerCustomerIdAndCategory(long customerId, Category category);
 
 	/**
-	 * @param customerId Receive a customer id
+	 * @param customerId long ID of customer
 	 * @param maxPrice   Receive a map price
 	 * @return This function return list of coupons by some values
 	 */
 	public List<Coupon> findByPurchasesCustomerCustomerIdAndPriceLessThanEqual(long customerId, double maxPrice);
 
 	/**
-	 * @param couponId Receive a coupon id
+	 * @param couponId long ID of coupon
 	 * @return This function return true if coupon valid to purchase
 	 */
 	@Query("SELECT CASE WHEN (COUNT(c) > 0) THEN TRUE ELSE FALSE END FROM Coupon c WHERE c.id = :coupon_id AND endDate > CURDATE()")

@@ -50,7 +50,7 @@ public class PurchasesApi {
 
 
 	/**
-	 * @param request Receive a httpServletRequest
+	 * @param request httpServletRequest incoming request
 	 * @return This function return a purchase list
 	 * @throws ApplicationException This function can throw an applicationException
 	 */
@@ -64,7 +64,7 @@ public class PurchasesApi {
 	}
 
 	/**
-	 * @param customerId Receive a customer id
+	 * @param customerId long ID of customer
 	 * @param request    Receive a httpServletRequest
 	 * @return This function return a purchase list
 	 * @throws ApplicationException This function can throw an applicationException
@@ -90,8 +90,8 @@ public class PurchasesApi {
 	}
 	
 	/**
-	 * @param customerId Receive a customer id
-	 * @param category   Receive a category
+	 * @param customerId long ID of customer
+	 * @param category   Category enum of coupon category
 	 * @param request    Receive a httpServletRequest
 	 * @return This function return a purchase list
 	 * @throws ApplicationException This function can throw an applicationException
@@ -107,7 +107,7 @@ public class PurchasesApi {
 	}
 
 	/**
-	 * @param customerId Receive a customer id
+	 * @param customerId long ID of customer
 	 * @param maxPrice   Receive a max price
 	 * @param request    Receive a httpServletRequest
 	 * @return This function return a purchase list

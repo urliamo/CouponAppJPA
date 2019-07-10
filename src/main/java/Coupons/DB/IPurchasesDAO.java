@@ -12,7 +12,7 @@ import Coupons.JavaBeans.Purchase;
 public interface IPurchasesDAO extends CrudRepository<Purchase, Long>{
 
 	/**
-	 * @param companyId Receive a company id
+	 * @param companyId long ID of company
 	 * @return This function return true if exist
 	 */
 	public boolean existsByPurchaseIdAndCustomerCustomerId(long purchaseID, long customerId);

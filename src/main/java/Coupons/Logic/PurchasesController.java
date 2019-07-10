@@ -161,7 +161,7 @@ public List<Purchase> getCustomerPurchasesByCategory(long customerId, Category c
 }
 
 /**
- * @param customerId Receive a customer id
+ * @param customerId long ID of customer
  * @param maxPrice   Receive a max price
  * @param userData   Receive an userData
  * @return This function return a purchase list
