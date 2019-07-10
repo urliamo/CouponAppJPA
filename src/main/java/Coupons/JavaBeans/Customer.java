@@ -24,7 +24,7 @@ public class Customer {
 	@Column(name = "FIRST_NAME", nullable = false, unique = false, length = 20)
 	private String firstName;
 
-	@Column(name = "LAST_NAME", nullable = true, unique = false, length = 20)
+	@Column(name = "LAST_NAME", nullable = false, unique = false, length = 20)
 	private String lastName;
 
 	@JoinColumn(name = "USER")

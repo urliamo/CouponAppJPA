@@ -2,31 +2,31 @@ package Coupons.JavaBeans;
 
 public class FightResults {
 	
-	private double customerPrice;
-	private double opponentPrice;
+	private Coupon customerCoupon;
+	private Coupon opponentCoupon;
 	
 	
-	public FightResults(double customerPrice, double opponentPrice) {
+	public FightResults(Coupon customerCoupon, Coupon opponentCoupon) {
 		super();
-		this.setCustomerPrice(customerPrice);
-		this.setOpponentPrice(opponentPrice);
+		this.setCustomerPrice(customerCoupon);
+		this.setOpponentPrice(opponentCoupon);
 	}
 	
 	public FightResults() {
 		super();
 	}
 
-	public double getCustomerPrice() {
-		return customerPrice;
+	public Coupon getCustomerPrice() {
+		return customerCoupon;
 	}
-	public void setCustomerPrice(double customerPrice) {
-		this.customerPrice = customerPrice;
+	public void setCustomerPrice(Coupon customerCoupon) {
+		this.customerCoupon = customerCoupon;
 	}
-	public double getOpponentPrice() {
-		return opponentPrice;
+	public Coupon getOpponentPrice() {
+		return opponentCoupon;
 	}
-	public void setOpponentPrice(double opponentPrice) {
-		this.opponentPrice = opponentPrice;
+	public void setOpponentPrice(Coupon opponentCoupon) {
+		this.opponentCoupon = opponentCoupon;
 	}
 
 

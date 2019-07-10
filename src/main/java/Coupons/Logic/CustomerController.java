@@ -107,6 +107,7 @@ public class CustomerController{
 			User customerUser= customer.getUser();
  			long userID = usersDAO.save(customerUser).getId();
 			customer.setCustomerId(userID);
+			customer.setEligibile(true);
 			customer.getUser().setId(userID);
 			customerDAO.save(customer);
 			}
@@ -271,7 +272,7 @@ public class CustomerController{
 		bonus.setDate(new Date());
 		purchasesDAO.save(bonus);
 		}
-		FightResults fightResults = new FightResults(customerCoupon.getPrice(),opponentCoupon.getPrice());
+		FightResults fightResults = new FightResults(customerCoupon,opponentCoupon);
 		return fightResults;
 	}
 	
