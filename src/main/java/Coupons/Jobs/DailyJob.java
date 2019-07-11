@@ -1,68 +1,44 @@
 package Coupons.Jobs;
 
-import java.time.LocalDate;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import Coupons.Exceptions.ApplicationException;
 
 /**
- * runnable class in charge of deleting expired coupons.
+ * This class create a timer
+ * 
+ * @author Lichay
  *
- * @param  quit boolean controlling when to stop thread
- * @param couponsDBDAO DB access object for coupons
- * @param date the current time
- * @see 		JavaBeans.Coupon
  */
-public class DailyJob implements Runnable {
-	
-	private boolean quit = false;
-	@Autowired
-	private  Coupons.DB.ICouponsDAO couponsDAO;
-	@Autowired
-	private  Coupons.DB.ICustomersDAO customersDAO;
-	
-	private LocalDate date = LocalDate.now();
-	
-	public void setQuit(boolean quit) {
-		this.quit = quit;
-	}
-	
-	
-	public void run() {
-		while(!quit) {
-			try {
-				//check if date changes since last check
-			if (date.isBefore(LocalDate.now())) {
-				//update current date
-				date = LocalDate.now();
-				//get expired coupons
-				couponsDAO.deleteExpiredCoupon();
-				customersDAO.setAllCustomersEligibile();
+@Component
+public class DailyJob {
 
-			}
-			//wait 1 hour and check for date change
-			try {
-					Thread.sleep(1000*60*60);
-				}
-			 catch (InterruptedException Ex) {
-				 System.out.println(Ex.getMessage());
-		    }
-			}
-			catch(Exception Ex){
-				 System.out.println(Ex.getMessage());
+	// Creating a task
+	@Autowired
+	private DailyJobTask task;
 
-			}
-		}
+	/**
+	 * This function create timer with task
+	 * 
+	 * @throws ApplicationException This function can throw an applicationException
+	 */
+	@PostConstruct
+	public void createTimer() throws ApplicationException {
+
+		// Creating a timer
+		Timer timer = new Timer("daily job");
+
+		timer.scheduleAtFixedRate(task, 0, 1000);
+
+		System.out.println("Timer task started");
+
 	}
-	
-	public DailyJob() {
-		super();
-		
-	}
-	
-	public void stop() {
-		this.setQuit(true);
-		
-	}
+
 }
+	
