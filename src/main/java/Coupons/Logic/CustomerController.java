@@ -229,7 +229,8 @@ public class CustomerController{
 		
 		return opponent;
 	}
-
+	
+	@Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, readOnly = false, timeout = 10)
 	public FightResults fightOpponent(long opponentId, UserData userData) throws ApplicationException {
 		// TODO Auto-generated method stub
 		if (userData == null)
@@ -266,7 +267,6 @@ public class CustomerController{
 		}
 		Coupon customerCoupon = customerCoupons.get((int) Math.random()*customerCoupons.size());
 		Coupon opponentCoupon = opponentCoupons.get((int) Math.random()*customerCoupons.size());
-		customerDAO.setCustomerEligibile(false, userData.getUserID());
 		if (customerCoupon.getPrice()>opponentCoupon.getPrice()) {
 		Purchase bonus = new Purchase();
 		bonus.setAmount(1);
@@ -276,6 +276,7 @@ public class CustomerController{
 		purchasesDAO.save(bonus);
 		}
 		FightResults fightResults = new FightResults(customerCoupon,opponentCoupon);
+		customerDAO.setCustomerEligibile(false, userData.getUserID());
 		return fightResults;
 	}
 	

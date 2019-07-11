@@ -7,25 +7,24 @@ public class FightResults {
 	
 	
 	public FightResults(Coupon customerCoupon, Coupon opponentCoupon) {
-		super();
-		this.setCustomerPrice(customerCoupon);
-		this.setOpponentPrice(opponentCoupon);
+		this.setCustomerCoupon(customerCoupon);
+		this.setOpponentCoupon(opponentCoupon);
 	}
 	
 	public FightResults() {
 		super();
 	}
 
-	public Coupon getCustomerPrice() {
+	public Coupon getCustomerCoupon() {
 		return customerCoupon;
 	}
-	public void setCustomerPrice(Coupon customerCoupon) {
+	public void setCustomerCoupon(Coupon customerCoupon) {
 		this.customerCoupon = customerCoupon;
 	}
-	public Coupon getOpponentPrice() {
+	public Coupon getOpponentCoupon() {
 		return opponentCoupon;
 	}
-	public void setOpponentPrice(Coupon opponentCoupon) {
+	public void setOpponentCoupon(Coupon opponentCoupon) {
 		this.opponentCoupon = opponentCoupon;
 	}
 
