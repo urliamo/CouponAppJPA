@@ -248,6 +248,9 @@ public class CustomerController{
 			throw new ApplicationException(ErrorType.INVALID_ID, ErrorType.INVALID_ID.getInternalMessage(), false);
 			
 		}
+		if (!customerDAO.existsById(opponentId) || !customerDAO.existsById(userData.getUserID()))
+			throw new ApplicationException(ErrorType.CUSTOMER_ID_DOES_NOT_EXIST,ErrorType.CUSTOMER_ID_DOES_NOT_EXIST.getInternalMessage(), false);
+
 		List<Coupon> opponentCoupons = new ArrayList<Coupon>();
 		couponsDAO.findByPurchasesCustomerCustomerId(opponentId).forEach(opponentCoupons::add);
 		List<Coupon> customerCoupons = new ArrayList<Coupon>();
